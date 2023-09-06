@@ -1,0 +1,22 @@
+public static LogisticsElectronicAddressLocator getContactInfo(RecId _location, LogisticsElectronicAddressMethodType _type)
+{
+	LogisticsElectronicAddress contactInfo;
+	LogisticsLocation loc;
+
+	select firstonly Locator from contactInfo join loc where contactInfo.Location == loc.RecId && loc.ParentLocation == _location
+		&& contactInfo.IsPrimary == NoYes::Yes && contactInfo.Type == _type;
+
+	return contactInfo.Locator;
+}
+
+//USAGE
+InventLocation warehouse = InventLocation::find(_custInvoiceJour.inventLocationId);
+InventLocationLogisticsLocation ll;
+LogisticsLocation loc;
+LogisticsPostalAddress add;
+
+select firstonly Address, Location from add join loc where add.Location == loc.RecId join ll
+	where ll.Location == loc.RecId && ll.InventLocation == warehouse.RecId && ll.IsPrimary == NoYes::Yes;
+	
+Email email = MyClass::getContactInfo(add.Location, LogisticsElectronicAddressMethodType::Email);
+Phone phone = MyClass::getContactInfo(add.Location, LogisticsElectronicAddressMethodType::Phone);
