@@ -1,0 +1,3 @@
+Number Format:
+NUMBERFORMAT(@.LineBase.Quantity, "# ###.00")
+//00 indicated "Forced" digits", use .## for optional
