@@ -1,0 +1,42 @@
+static void JT_generateMissingDefaultOrderSettings(Args _args)
+{
+    Dialog d = new Dialog();
+    DialogField df = d.addField(extendedTypeStr(ItemId));
+    DialogField dfSim = d.addFieldValue(extendedTypeStr(NoYesId), NoYes::Yes, "Simulate");
+    boolean simulate;
+    ItemId itemId;
+
+    d.run();
+
+    if (d.closedOk())
+    {
+        ttsBegin;
+        simulate = dfSim.value();
+        itemId = df.value();
+        if (!InventItemPurchSetup::findDefault(itemId))
+        {
+            InventItemPurchSetup::insertDefault(itemId);
+            info(strFmt("Creating default purch setup for %1", itemId));
+        }
+
+        if (!InventItemInventSetup::findDefault(itemId))
+        {
+            InventItemInventSetup::insertDefault(itemId);
+            info(strFmt("Creating default item setup for %1", itemId));
+        }
+
+        if (!InventItemSalesSetup::findDefault(itemId))
+        {
+            InventItemSalesSetup::insertDefault(itemId);
+            info(strFmt("Creating default sales setup for %1", itemId));
+        }
+        if (simulate)
+        {
+            ttsAbort;
+        }
+        else
+        {
+            ttsCommit;
+        }
+    }
+}
