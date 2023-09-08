@@ -1,0 +1,3 @@
+//Normal time app does not allow setting of time zones
+//Run from a Administrative command prompt console
+tzutil.exe /s "South Africa Standard Time"
