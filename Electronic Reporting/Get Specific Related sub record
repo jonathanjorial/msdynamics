@@ -1,0 +1,10 @@
+//Done in the model mapping
+//Finding specific Tax RegistrationNumber for Customer
+//1. Create Calculated Field E.G. On Postal Address 
+FIRST(
+    WHERE        
+        (
+            @.'<Relations'.TaxRegistration,
+            @.'<Relations'.TaxRegistration.'>Relations'.TaxRegistrationTypeApplicabilityRule.'>Relations'.TaxRegistrationType.TaxRegstrationType = "[REG TYPE NUMBER]"
+        )
+).RegistrationNumber
