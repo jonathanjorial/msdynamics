@@ -1,0 +1,8 @@
+##Standard
+INDEX(SPLIT(model.InvoiceBase.CompanyInfo.BankAccount.PostalAddress.Address,CHAR(10)),1).VALUE
+
+##With Error Detection and default
+IF(COUNT(SPLIT(model.InvoiceBase.CompanyInfo.BankAccount.PostalAddress.Address,CHAR(10)))>=4,
+INDEX(SPLIT(model.InvoiceBase.CompanyInfo.BankAccount.PostalAddress.Address,CHAR(10)),4).VALUE,"")
+
+##Note: If you attempt the above without error detection and the text doesn't have the specified elements, the generation will fail

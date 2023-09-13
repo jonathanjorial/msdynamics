@@ -1,0 +1,4 @@
+Electronic reporting row cannot be less than 1. parameter name: 
+
+1. Ensure all row ranges exist in Excel, otherwise delete from Layout
+2. Save and reopen designer
