@@ -1,0 +1,3 @@
+Error: Excel range start row should be less or equal end row - Evaluating binding of format component Free text invoice/Invoice/Header.
+
+Removed the "Keep rows together" on header sections

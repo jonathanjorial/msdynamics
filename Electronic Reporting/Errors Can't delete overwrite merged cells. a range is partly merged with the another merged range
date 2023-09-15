@@ -1,0 +1,4 @@
+Error: can't delete/overwrite merged cells. a range is partly merged with the another merged range. C81:F81
+
+Solution:
+Check for named cell references within the merged cell E.G. If there is a merged call for C81-F81, there may be a named reference for D81 that needs to be removed
