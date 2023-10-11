@@ -1,0 +1,29 @@
+InventTrans             inventTrans;
+InventTransOrigin       inventTransOrigin;
+InventMovement          inventMovement;
+InventUpd_Reservation   inventUpd_Reservation ;
+
+// Remove reservations and markings on a reserved salesorder
+while select inventTrans
+where  inventTrans.ItemId                      == “0900270G31115”
+	&&  inventTrans.StatusReceipt               == StatusReceipt::None
+	&& (inventTrans.StatusIssue                 == StatusIssue::ReservPhysical
+	||  inventTrans.StatusIssue                 == StatusIssue::ReservOrdered)
+	exists join inventTransOrigin
+		where   inventTransOrigin.RecId            == inventTrans.InventTransOrigin
+{
+
+	if (inventTrans.MarkingRefInventTransOrigin)
+	{
+		InventTransOrigin::deleteMarking(inventTrans.MarkingRefInventTransOrigin, inventTrans.InventTransOrigin, -inventTrans.Qty, true);
+		InventTransOrigin::deleteMarking(inventTrans.InventTransOrigin, inventTrans.MarkingRefInventTransOrigin, inventTrans.Qty, true);
+	}
+	
+	if (inventTrans.StatusIssue == StatusIssue::ReservPhysical || inventTrans.StatusIssue == StatusIssue::ReservOrdered)
+	{
+		Inventmovement = inventTrans.inventmovement(true);
+		inventUpd_Reservation = InventUpd_Reservation::newInventDim(inventmovement,inventTrans.inventDim(), -1 * inventTrans.Qty, false);
+		inventUpd_Reservation.updatenow();
+	}
+}
+info(‘Done’);

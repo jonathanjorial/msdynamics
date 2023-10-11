@@ -1,0 +1,22 @@
+Dialog d = new Dialog();
+DialogField dfTable = d.addField(extendedTypeStr(TableName));
+DialogField dfType = d.addField(enumStr(DatabaseLogType),"Type");
+DatabaseLog log;
+TableName tableName;
+DatabaseLogType type;
+
+d.run();
+if (d.closedOk())
+{
+	type = dfType.value();
+   // if (type != DatabaseLogType::Update)
+  //  {
+		tableName = dfTable.value();
+		log.logType = dfType.value();
+		log.logTable = tableName2id(tableName);
+		log.insert();
+
+		SysFlushDatabaseLogSetup::main();
+		info("Done");
+  //  }
+}

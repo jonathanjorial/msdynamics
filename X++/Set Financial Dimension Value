@@ -1,0 +1,55 @@
+SalesLine line;
+    SalesTable sales;
+    int i;
+    boolean simulate;
+    DimensionValue val, valBU, valOld;
+    Name dimensionName;
+
+    DimensionAttribute                  dimAttribute, dimBU;
+    DimensionAttributeValue             dimAttributeValue;
+    DimensionAttributeValueSetStorage   dimStorage;
+    DimensionDefault                    ret;
+
+
+        dimensionName = "Department";
+        val = dfFieldValue.value();
+
+        dimAttribute = DimensionAttribute::findByName(dimensionName);
+		
+        if (!dimAttribute) throw error(strFmt("Invalid dimension name %1", dimensionName));
+        ttsBegin;
+        while select forUpdate line join sales where line.SalesId == sales.SalesId
+            && sales.SalesStatus == SalesStatus::Backorder
+            && line.Itemid like 'NS*'
+            //&& line.SalesId == 'OF426707SO'
+        {
+            dimStorage      = DimensionAttributeValueSetStorage::find(line.DefaultDimension);
+
+            valBU = dimStorage.getDisplayValueByDimensionAttribute(dimBU.RecId);
+            val = strfmt("%1%2",valBU,"OFF");
+
+            dimAttributeValue = DimensionAttributeValue::findByDimensionAttributeAndValue(dimAttribute, val, true, true);
+            valOld = dimStorage.getDisplayValueByDimensionAttribute(dimAttribute.RecId);
+
+            if (valOld != val)
+            {
+                dimStorage.addItem(dimAttributeValue);
+                line.DefaultDimension = dimStorage.save();
+                line.update();
+                i++;
+                info(strFmt("%3, %1 - %2 - %4", line.Salesid, line.ItemId, line.CreatedDateTime, val));
+            }
+        }
+        info(strFmt("%1 records updated", i));
+        if (simulate)
+        {
+            info(strFmt("Updated rolled back"));
+            ttsAbort;
+        }
+        else
+        {
+            ttsCommit;
+        }
+
+    }
+}
