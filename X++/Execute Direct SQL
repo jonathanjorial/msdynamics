@@ -1,0 +1,10 @@
+str sql = strFmt('DELETE FROM [YOURTABLE] WHERE RecId = %1', [YOURTABLE].RecId);
+
+SqlStatementExecutePermission perm = new SqlStatementExecutePermission(sql);
+perm.assert();
+
+Connection Con = new Connection();
+Statement Stmt = Con.createStatement();
+stmt.executeUpdate(sql);
+
+CodeAccessPermission::revertAssert();
