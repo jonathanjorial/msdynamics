@@ -1,3 +1,4 @@
+//DELETE
 str sql = strFmt('DELETE FROM [YOURTABLE] WHERE RecId = %1', [YOURTABLE].RecId);
 
 SqlStatementExecutePermission perm = new SqlStatementExecutePermission(sql);
@@ -8,3 +9,28 @@ Statement Stmt = Con.createStatement();
 stmt.executeUpdate(sql);
 
 CodeAccessPermission::revertAssert();
+
+//READ
+//SOURCE: https://www.d365snippets.com/2021/12/how-to-execute-direct-sql-statement-using-xpp-in-d365.html
+SqlSystem sqlSystem = new SqlSystem();
+str sqlStatement = 'SELECT %1, %2, %3, %4 FROM %5';
+sqlStatement = strFmt(sqlStatement,EmpId.name(DbBackend::Sql),EmpName.name(DbBackend::Sql),BasicSalary.name(DbBackend::Sql),
+	TelephoneAllowance.name(DbBackend::Sql),
+	EmployeeSalaryDetailsTbl.name(DbBackend::Sql),sqlSystem.sqlLiteral(CustVendorBlocked::No, true));
+UserConnection userConnection = new UserConnection();
+Statement statement = userConnection.createStatement();
+SqlStatementExecutePermission sqlPermission = new SqlStatementExecutePermission(sqlStatement);
+sqlPermission.assert();
+resultSet = statement.executeQuery(sqlStatement);
+CodeAccessPermission::revertAssert();
+
+while (resultSet.next())
+{
+   info(strFmt(
+  "EmpId : %1 , Emp Name : %2 , Basic Salary : %3 , Telephone Allowance : %4",
+  resultSet.getString(1),
+  resultSet.getString(2),
+  resultSet.getString(3),
+  resultSet.getString(4)	   
+	   ));
+} 
